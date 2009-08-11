@@ -1,5 +1,6 @@
 /* Zebra common header.
    Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002 Kunihiro Ishiguro
+   Portions Copyright (c) 2008 Everton da Silva Marques <everton.marques@gmail.com>
 
 This file is part of GNU Zebra.
 
@@ -424,7 +425,8 @@ struct in_pktinfo
 #define ZEBRA_ROUTER_ID_DELETE            21
 #define ZEBRA_ROUTER_ID_UPDATE            22
 #define ZEBRA_HELLO                       23
-#define ZEBRA_MESSAGE_MAX                 24
+#define ZEBRA_IPV4_NEXTHOP_LOOKUP_V2      24
+#define ZEBRA_MESSAGE_MAX                 25
 
 /* Marker value used in new Zserv, in the byte location corresponding
  * the command value in the old zserv header. To allow old and new
@@ -432,8 +434,25 @@ struct in_pktinfo
  */
 #define ZEBRA_HEADER_MARKER              255
 
+<<<<<<< HEAD
 /* Zebra route's types are defined in route_types.h */
 #include "route_types.h"
+=======
+/* Zebra route's types. */
+#define ZEBRA_ROUTE_SYSTEM               0
+#define ZEBRA_ROUTE_KERNEL               1
+#define ZEBRA_ROUTE_CONNECT              2
+#define ZEBRA_ROUTE_STATIC               3
+#define ZEBRA_ROUTE_RIP                  4
+#define ZEBRA_ROUTE_RIPNG                5
+#define ZEBRA_ROUTE_OSPF                 6
+#define ZEBRA_ROUTE_OSPF6                7
+#define ZEBRA_ROUTE_ISIS                 8
+#define ZEBRA_ROUTE_BGP                  9
+#define ZEBRA_ROUTE_HSLS		 10
+#define ZEBRA_ROUTE_PIM                  11
+#define ZEBRA_ROUTE_MAX                  12
+>>>>>>> [pim] Initial pim 0.155
 
 /* Note: whenever a new route-type or zserv-command is added the
  * corresponding {command,route}_types[] table in lib/log.c MUST be
