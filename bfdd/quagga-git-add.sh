@@ -3,7 +3,7 @@
 # Add to git new files created by bfdd patch
 #
 # Run from quagga's top dir as:
-# ./pimd/quagga-git-add.sh
+# . bfdd/quagga-git-add.sh
 #
 # $QuaggaId: $Format:%an, %ai, %h$ $
 

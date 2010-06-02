@@ -3,7 +3,7 @@
 # Configure for minimum Quagga build needed for bfdd.
 #
 # Run from quagga's top dir as:
-# . pimd/quagga-configure.sh
+# . bfdd/quagga-configure.sh
 #
 # $QuaggaId: $Format:%an, %ai, %h$ $
 
