@@ -422,8 +422,19 @@ struct in_pktinfo
 #define ZEBRA_ROUTER_ID_ADD               20
 #define ZEBRA_ROUTER_ID_DELETE            21
 #define ZEBRA_ROUTER_ID_UPDATE            22
-#define ZEBRA_IPV4_NEXTHOP_LOOKUP_V2      23
-#define ZEBRA_MESSAGE_MAX                 24
+#define ZEBRA_IPV4_BFD_CNEIGH_LIST        23
+#define ZEBRA_IPV6_BFD_CNEIGH_LIST        24
+#define ZEBRA_IPV4_BFD_CNEIGH_ADD         25
+#define ZEBRA_IPV4_BFD_CNEIGH_DEL         26
+#define ZEBRA_IPV6_BFD_CNEIGH_ADD         27
+#define ZEBRA_IPV6_BFD_CNEIGH_DEL         28
+#define ZEBRA_IPV4_BFD_NEIGH_UP           29
+#define ZEBRA_IPV4_BFD_NEIGH_DOWN         30
+#define ZEBRA_IPV6_BFD_NEIGH_UP           31
+#define ZEBRA_IPV6_BFD_NEIGH_DOWN         32
+#define ZEBRA_BFD_REGISTER                33
+#define ZEBRA_IPV4_NEXTHOP_LOOKUP_V2      34
+#define ZEBRA_MESSAGE_MAX                 35
 
 /* Marker value used in new Zserv, in the byte location corresponding
  * the command value in the old zserv header. To allow old and new
@@ -443,8 +454,9 @@ struct in_pktinfo
 #define ZEBRA_ROUTE_ISIS                 8
 #define ZEBRA_ROUTE_BGP                  9
 #define ZEBRA_ROUTE_HSLS		 10
-#define ZEBRA_ROUTE_PIM                  11
-#define ZEBRA_ROUTE_MAX                  12
+#define ZEBRA_ROUTE_BFD                  11
+#define ZEBRA_ROUTE_PIM                  12
+#define ZEBRA_ROUTE_MAX                  13
 
 /* Note: whenever a new route-type or zserv-command is added the
  * corresponding {command,route}_types[] table in lib/log.c MUST be

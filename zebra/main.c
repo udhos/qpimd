@@ -35,6 +35,7 @@
 
 #include "zebra/rib.h"
 #include "zebra/zserv.h"
+#include "zebra/zserv_bfd.h"
 #include "zebra/debug.h"
 #include "zebra/router-id.h"
 #include "zebra/irdp.h"
@@ -336,6 +337,9 @@ main (int argc, char **argv)
 
   /* Sort VTY commands. */
   sort_node ();
+
+  /* BFD */
+  bfd_cneigh_init();
 
 #ifdef HAVE_SNMP
   zebra_snmp_init ();

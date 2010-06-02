@@ -39,10 +39,12 @@
 #include "buffer.h"
 
 #include "zebra/zserv.h"
+#include "zebra/zserv_bfd.h"
 #include "zebra/router-id.h"
 #include "zebra/redistribute.h"
 #include "zebra/debug.h"
 #include "zebra/ipforward.h"
+
 
 /* Event list of zebra. */
 enum event { ZEBRA_SERV, ZEBRA_READ, ZEBRA_WRITE };
@@ -93,7 +95,7 @@ zserv_flush_data(struct thread *thread)
   return 0;
 }
 
-static int
+int
 zebra_server_send_message(struct zserv *client)
 {
   if (client->t_suicide)
@@ -122,7 +124,7 @@ zebra_server_send_message(struct zserv *client)
   return 0;
 }
 
-static void
+void
 zserv_create_header (struct stream *s, uint16_t cmd)
 {
   /* length placeholder, caller can update */
@@ -724,6 +726,9 @@ zsend_ipv4_import_lookup (struct zserv *client, struct prefix_ipv4 *p)
   
   return zebra_server_send_message(client);
 }
+
+
+
 
 /* Router-id is updated. Send ZEBRA_ROUTER_ID_ADD to client. */
 int
@@ -1368,6 +1373,41 @@ zebra_client_read (struct thread *thread)
     case ZEBRA_IPV4_IMPORT_LOOKUP:
       zread_ipv4_import_lookup (client, length);
       break;
+    case ZEBRA_BFD_REGISTER:
+      zread_bfd_register (client, length);
+      break;
+    case ZEBRA_IPV4_BFD_CNEIGH_LIST:
+      zread_ipv4_bfd_cneigh_list (client, length);
+      break;
+    case ZEBRA_IPV4_BFD_CNEIGH_ADD:
+      zread_ipv4_bfd_cneigh_add (client, length);
+      break;
+    case ZEBRA_IPV4_BFD_CNEIGH_DEL:
+      zread_ipv4_bfd_cneigh_del (client, length);
+      break;
+    case ZEBRA_IPV4_BFD_NEIGH_UP:
+      zread_ipv4_bfd_neigh_up (client, length);
+      break;
+    case ZEBRA_IPV4_BFD_NEIGH_DOWN:
+      zread_ipv4_bfd_neigh_down (client, length);
+      break;
+#ifdef HAVE_IPV6
+    case ZEBRA_IPV6_BFD_CNEIGH_LIST:
+      zread_ipv6_bfd_cneigh_list (client, length);
+      break;
+    case ZEBRA_IPV6_BFD_CNEIGH_ADD:
+      zread_ipv6_bfd_cneigh_add (client, length);
+      break;
+    case ZEBRA_IPV6_BFD_CNEIGH_DEL:
+      zread_ipv6_bfd_cneigh_del (client, length);
+      break;
+    case ZEBRA_IPV6_BFD_NEIGH_UP:
+      zread_ipv6_bfd_neigh_up (client, length);
+      break;
+    case ZEBRA_IPV6_BFD_NEIGH_DOWN:
+      zread_ipv6_bfd_neigh_down (client, length);
+      break;
+#endif /* HAVE_IPV6 */
     default:
       zlog_info ("Zebra received unknown command %d", command);
       break;

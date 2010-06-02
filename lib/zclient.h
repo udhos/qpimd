@@ -24,6 +24,7 @@
 
 /* For struct interface and struct connected. */
 #include "if.h"
+#include "prefix.h"
 
 /* For input/output buffer to zebra. */
 #define ZEBRA_MAX_PACKET_SIZ          4096
@@ -67,6 +68,11 @@ struct zclient
   /* Redistribute defauilt. */
   u_char default_information;
 
+/* If this flag is set the client is considered as bfdd */
+#define ZCLIENT_FLAGS_BFDD   0x1
+  /* Flags */
+  int flags;
+
   /* Pointer to the callback functions. */
   int (*router_id_update) (int, struct zclient *, uint16_t);
   int (*interface_add) (int, struct zclient *, uint16_t);
@@ -79,7 +85,20 @@ struct zclient
   int (*ipv4_route_delete) (int, struct zclient *, uint16_t);
   int (*ipv6_route_add) (int, struct zclient *, uint16_t);
   int (*ipv6_route_delete) (int, struct zclient *, uint16_t);
+
+  /* BFD */
+  int (*ipv4_bfd_cneigh_add) (int, struct zclient *, uint16_t);
+  int (*ipv4_bfd_cneigh_del) (int, struct zclient *, uint16_t);
+  int (*ipv4_bfd_neigh_up) (int, struct zclient *, uint16_t);
+  int (*ipv4_bfd_neigh_down) (int, struct zclient *, uint16_t);
+#ifdef HAVE_IPV6
+  int (*ipv6_bfd_cneigh_add) (int, struct zclient *, uint16_t);
+  int (*ipv6_bfd_cneigh_del) (int, struct zclient *, uint16_t);
+  int (*ipv6_bfd_neigh_up) (int, struct zclient *, uint16_t);
+  int (*ipv6_bfd_neigh_down) (int, struct zclient *, uint16_t);
+#endif /* HAVE_IPV6 */
 };
+
 
 /* Zebra API message flag. */
 #define ZAPI_MESSAGE_NEXTHOP  0x01
@@ -156,6 +175,49 @@ extern void zebra_interface_if_set_value (struct stream *, struct interface *);
 extern void zebra_router_id_update_read (struct stream *s, struct prefix *rid);
 extern int zapi_ipv4_route (u_char, struct zclient *, struct prefix_ipv4 *, 
                             struct zapi_ipv4 *);
+
+
+/* BFD: Register message */
+int zapi_bfd_register(struct zclient *);
+
+/* BFD: Add/Remove candidate neighbor */
+#define BFD_CNEIGH_ADD 1
+#define BFD_CNEIGH_DEL 2
+#define zapi_ipv4_bfd_cneigh_add(C,RP,LP,I,F) zapi_ipv4_bfd_cneigh_adddel(C,BFD_CNEIGH_ADD,RP,LP,I,F)
+#define zapi_ipv4_bfd_cneigh_del(C,RP,LP,I,F) zapi_ipv4_bfd_cneigh_adddel(C,BFD_CNEIGH_DEL,RP,LP,I,F)
+extern int zapi_ipv4_bfd_cneigh_adddel(struct zclient *zclient, int cmd, 
+				       struct prefix_ipv4 *rp, 
+				       struct prefix_ipv4 *lp,
+				       unsigned int ifindex, uint32_t flags);
+extern struct bfd_cneigh* ipv4_bfd_cneigh_adddel_read(struct stream *);
+#ifdef HAVE_IPV6
+#define zapi_ipv6_bfd_cneigh_add(C,RP,LP,I,F) zapi_ipv6_bfd_cneigh_adddel(C,BFD_CNEIGH_ADD,RP,LP,I,F)
+#define zapi_ipv6_bfd_cneigh_del(C,RP,LP,I,F) zapi_ipv6_bfd_cneigh_adddel(C,BFD_CNEIGH_DEL,RP,LP,I,F)
+int zapi_ipv6_bfd_cneigh_adddel(struct zclient *zclient, int cmd, 
+				struct prefix_ipv6 *rp, 
+				struct prefix_ipv6 *lp, 
+				unsigned int ifindex, uint32_t flags);
+extern struct bfd_cneigh* ipv6_bfd_cneigh_adddel_read(struct stream *);
+#endif /* HAVE_IPV6 */
+
+/* BFD: Signalize Up/Down state */
+#define BFD_NEIGH_UP   1
+#define BFD_NEIGH_DOWN 2
+#define zapi_ipv4_bfd_neigh_up(C,R,L,I)   zapi_ipv4_bfd_neigh_updown(C,BFD_NEIGH_UP,R,L.I)
+#define zapi_ipv4_bfd_neigh_down(C,R,L,I) zapi_ipv4_bfd_neigh_updown(C,BFD_NEIGH_DOWN,R,L,I)
+int zapi_ipv4_bfd_neigh_updown(struct zclient *zclient, int cmd, 
+			       struct prefix_ipv4 *rp, 
+			       struct prefix_ipv4 *lp, unsigned int ifindex);
+#define ipv4_bfd_neigh_updown_read(S) ipv4_bfd_cneigh_adddel_read(S)
+#ifdef HAVE_IPV6
+#define zapi_ipv6_bfd_neigh_up(C,R,L,I)   zapi_ipv6_bfd_neigh_updown(C,BFD_NEIGH_UP,R,L.I)
+#define zapi_ipv6_bfd_neigh_down(C,R,L,I) zapi_ipv6_bfd_neigh_updown(C,BFD_NEIGH_DOWN,R,L,I)
+int zapi_ipv6_bfd_neigh_updown(struct zclient *zclient, int cmd, 
+			       struct prefix_ipv6 *rp, 
+			       struct prefix_ipv6 *lp, unsigned int ifindex);
+#define ipv6_bfd_neigh_updown_read(S) ipv6_bfd_cneigh_adddel_read(S)
+#endif /* HAVE_IPV6 */
+
 
 #ifdef HAVE_IPV6
 /* IPv6 prefix add and delete function prototype. */

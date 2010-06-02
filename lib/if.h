@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #define _ZEBRA_IF_H
 
 #include "linklist.h"
+#include "sockunion.h"
 
 /*
   Interface name length.
@@ -234,6 +235,11 @@ extern struct interface *if_create (const char *name, int namelen);
 extern struct interface *if_lookup_by_index (unsigned int);
 extern struct interface *if_lookup_exact_address (struct in_addr);
 extern struct interface *if_lookup_address (struct in_addr);
+extern struct interface *if_lookup_by_sockunion_exact(union sockunion *su);
+extern struct interface *if_lookup_prefix (struct prefix *p);
+#ifdef HAVE_IPV6
+extern struct interface *if_lookup_exact_address6 (struct in6_addr *addr);
+#endif /* HAVE IPV6 */
 
 /* These 2 functions are to be used when the ifname argument is terminated
    by a '\0' character: */

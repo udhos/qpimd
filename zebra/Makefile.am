@@ -27,7 +27,7 @@ sbin_PROGRAMS = zebra
 noinst_PROGRAMS = testzebra
 
 zebra_SOURCES = \
-	zserv.c main.c interface.c connected.c zebra_rib.c zebra_routemap.c \
+	zserv.c zserv_bfd.c main.c interface.c connected.c zebra_rib.c zebra_routemap.c \
 	redistribute.c debug.c rtadv.c zebra_snmp.c zebra_vty.c \
 	irdp_main.c irdp_interface.c irdp_packet.c router-id.c
 
@@ -36,7 +36,7 @@ testzebra_SOURCES = test_main.c zebra_rib.c interface.c connected.c debug.c \
 	kernel_null.c  redistribute_null.c ioctl_null.c misc_null.c
 
 noinst_HEADERS = \
-	connected.h ioctl.h rib.h rt.h zserv.h redistribute.h debug.h rtadv.h \
+	connected.h ioctl.h rib.h rt.h zserv.h zserv_bfd.h redistribute.h debug.h rtadv.h \
 	interface.h ipforward.h irdp.h router-id.h kernel_socket.h
 
 zebra_LDADD = $(otherobj) $(LIBCAP) $(LIB_IPV6) ../lib/libzebra.la

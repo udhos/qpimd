@@ -83,6 +83,7 @@ struct zebra_t
   struct meta_queue *mq;
 };
 
+
 /* Count prefix size from mask length */
 #define PSIZE(a) (((a) + 7) / (8))
 
@@ -107,6 +108,8 @@ extern int zsend_interface_update (int, struct zserv *, struct interface *);
 extern int zsend_route_multipath (int, struct zserv *, struct prefix *, 
                                   struct rib *);
 extern int zsend_router_id_update(struct zserv *, struct prefix *);
+extern int zebra_server_send_message(struct zserv *client);
+extern void zserv_create_header (struct stream *s, uint16_t cmd);
 
 extern pid_t pid;
 

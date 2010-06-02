@@ -90,6 +90,21 @@ struct memory_list memory_list_zebra[] =
   { -1, NULL },
 };
 
+struct memory_list memory_list_bfd[] =
+{
+  { MTYPE_BFD,                  "BFD instance"			},
+  { MTYPE_BFD_LPORT,            "BFD lport"			},
+  { MTYPE_BFD_NEIGHSTRUCT,      "BFD table pointer"	        },
+  { MTYPE_BFD_CNEIGHTBL,        "BFD candidate table"	        },
+  { MTYPE_BFD_NEIGHTBL,         "BFD neighbor table"	        },
+  { 0, NULL },
+  { MTYPE_BFD_ADDRTREEHDR,      "BFD addrtreehdr"               },
+  { MTYPE_BFD_IF_INFO,          "BFD interface"                 },
+  { MTYPE_BFD_NEIGH,            "BFD neighbor"                  },
+  { MTYPE_BFD_CNEIGH,           "BFD candidate neighbor"        },
+  { -1, NULL },
+};
+
 struct memory_list memory_list_bgp[] =
 {
   { MTYPE_BGP,			"BGP instance"			},
@@ -277,6 +292,7 @@ struct mlist mlists[] __attribute__ ((unused)) = {
   { memory_list_ospf6,	"OSPF6"	},
   { memory_list_isis,	"ISIS"	},
   { memory_list_bgp,	"BGP"	},
+  { memory_list_bfd,    "BFD"   },
   { memory_list_pim,	"PIM"	},
   { NULL, NULL},
 };
