@@ -1,0 +1,7 @@
+To be implemented:
+- authentication 
+- echo mode
+- support for ospfd 
+- support for ospf6d
+- support for isisid
+- draft-ietf-bfd-mib-03.txt

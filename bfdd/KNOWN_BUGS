@@ -1,0 +1,17 @@
+KNOWN BUGS AND LIMITATIONS
+
+Although bfdd supports mentioned drafts (see README)
+some limitations are present:
+
+- GTSM (Generalized TTL Security Mechanism) is supported
+  for IPv4 based neighbors only if enabled during compilation.
+  Which means there is no GTSM by default. Which together will a lack
+  of authentication might be considered as a security hole.
+
+- Building was tested only on GNU/Linux (debian 4.0) so it's rather likely
+  that build will fail on different systems.
+
+- Demand mode wasn't tested at all, mainly because nobody supports it right now.
+
+- BFDD currently ignores interface add/del, address add/del messages
+  from zebra with all of the consequences.
