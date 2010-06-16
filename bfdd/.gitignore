@@ -1,0 +1,4 @@
+.libs
+*.a
+*.o
+bfdd
