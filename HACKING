@@ -344,7 +344,7 @@ The source code of Quagga is based on these vendors:
 
    zebra_org (http://www.zebra.org/)
    isisd_sf (http://isisd.sf.net/)
-   qpimd (http://http://savannah.nongnu.org/projects/qpimd/)
+   qpimd (https://github.com/udhos/qpimd)
 
 To import code from further sources, e.g. for archival purposes without
 necessarily having to review and/or fix some changeset, create a branch from
