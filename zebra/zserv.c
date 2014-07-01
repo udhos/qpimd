@@ -637,6 +637,8 @@ zsend_ipv4_nexthop_lookup_mrib (struct zserv *client, struct in_addr addr)
 
   if (rib)
     {
+      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+        zlog_debug("%s: Matching rib entry found.", __func__);
       stream_putc (s, rib->distance);
       stream_putl (s, rib->metric);
       num = 0;
@@ -673,6 +675,8 @@ zsend_ipv4_nexthop_lookup_mrib (struct zserv *client, struct in_addr addr)
     }
   else
     {
+      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+        zlog_debug("%s: No matching rib entry found.", __func__);
       stream_putc (s, 0); /* distance */
       stream_putl (s, 0); /* metric */
       stream_putc (s, 0); /* nexthop_num */
