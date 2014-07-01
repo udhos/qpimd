@@ -599,6 +599,82 @@ zsend_ipv4_nexthop_lookup (struct zserv *client, struct in_addr addr)
   return zebra_server_send_message(client);
 }
 
+/*
+  Modified version of zsend_ipv4_nexthop_lookup():
+  Returns both route metric and protocol distance.
+*/
+static int
+zsend_ipv4_nexthop_lookup_v2 (struct zserv *client, struct in_addr addr)
+{
+  struct stream *s;
+  struct rib *rib;
+  unsigned long nump;
+  u_char num;
+  struct nexthop *nexthop;
+
+  /* Lookup nexthop. */
+  rib = rib_match_ipv4 (addr);
+
+  /* Get output stream. */
+  s = client->obuf;
+  stream_reset (s);
+
+  /* Fill in result. */
+  zserv_create_header (s, ZEBRA_IPV4_NEXTHOP_LOOKUP_V2);
+  stream_put_in_addr (s, &addr);
+
+  if (rib)
+    {
+      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+        zlog_debug("%s: Matching rib entry found.", __func__);
+      stream_putc (s, rib->distance);
+      stream_putl (s, rib->metric);
+      num = 0;
+      nump = stream_get_endp(s); /* remember position for nexthop_num */
+      stream_putc (s, 0);        /* reserve room for nexthop_num */
+      /* Only non-recursive routes are elegible to resolve the nexthop we
+       * are looking up. Therefore, we will just iterate over the top
+       * chain of nexthops. */
+      for (nexthop = rib->nexthop; nexthop; nexthop = nexthop->next)
+	if (CHECK_FLAG (nexthop->flags, NEXTHOP_FLAG_FIB))
+	  {
+	    stream_putc (s, nexthop->type);
+	    switch (nexthop->type)
+	      {
+	      case ZEBRA_NEXTHOP_IPV4:
+		stream_put_in_addr (s, &nexthop->gate.ipv4);
+		break;
+	      case ZEBRA_NEXTHOP_IPV4_IFINDEX:
+		stream_put_in_addr (s, &nexthop->gate.ipv4);
+		stream_putl (s, nexthop->ifindex);
+		break;
+	      case ZEBRA_NEXTHOP_IFINDEX:
+	      case ZEBRA_NEXTHOP_IFNAME:
+		stream_putl (s, nexthop->ifindex);
+		break;
+	      default:
+		/* do nothing */
+		break;
+	      }
+	    num++;
+	  }
+    
+      stream_putc_at (s, nump, num); /* store nexthop_num */
+    }
+  else
+    {
+      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+        zlog_debug("%s: No matching rib entry found.", __func__);
+      stream_putc (s, 0); /* distance */
+      stream_putl (s, 0); /* metric */
+      stream_putc (s, 0); /* nexthop_num */
+    }
+
+  stream_putw_at (s, 0, stream_get_endp (s));
+  
+  return zebra_server_send_message(client);
+}
+
 static int
 zsend_ipv4_import_lookup (struct zserv *client, struct prefix_ipv4 *p)
 {
