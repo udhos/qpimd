@@ -425,7 +425,7 @@ struct in_pktinfo
 #define ZEBRA_ROUTER_ID_DELETE            21
 #define ZEBRA_ROUTER_ID_UPDATE            22
 #define ZEBRA_HELLO                       23
-#define ZEBRA_IPV4_NEXTHOP_LOOKUP_V2      24
+#define ZEBRA_IPV4_NEXTHOP_LOOKUP_MRIB    24
 #define ZEBRA_MESSAGE_MAX                 25
 
 /* Marker value used in new Zserv, in the byte location corresponding

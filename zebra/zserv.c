@@ -602,10 +602,11 @@ zsend_ipv4_nexthop_lookup (struct zserv *client, struct in_addr addr)
 
 /*
   Modified version of zsend_ipv4_nexthop_lookup():
+  Query unicast rib if nexthop is not found on mrib.
   Returns both route metric and protocol distance.
 */
 static int
-zsend_ipv4_nexthop_lookup_v2 (struct zserv *client, struct in_addr addr)
+zsend_ipv4_nexthop_lookup_mrib (struct zserv *client, struct in_addr addr)
 {
   struct stream *s;
   struct rib *rib;
@@ -614,20 +615,38 @@ zsend_ipv4_nexthop_lookup_v2 (struct zserv *client, struct in_addr addr)
   struct nexthop *nexthop;
 
   /* Lookup nexthop. */
-  rib = rib_match_ipv4 (addr);
+  rib = rib_match_ipv4_safi (addr, SAFI_MULTICAST);
+
+  if (rib) {
+    if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+      zlog_debug("%s: Matching mrib entry found.", __func__);
+  }
+  else {
+    if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+      zlog_debug("%s: No matching mrib entry found.", __func__);
+
+    /* Retry lookup with unicast rib */
+    rib = rib_match_ipv4_safi (addr, SAFI_UNICAST);
+    if (rib) {
+      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+	zlog_debug("%s: Matching rib entry found.", __func__);
+    }
+    else {
+    if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+      zlog_debug("%s: No matching rib entry found.", __func__);
+    }
+  }
 
   /* Get output stream. */
   s = client->obuf;
   stream_reset (s);
 
   /* Fill in result. */
-  zserv_create_header (s, ZEBRA_IPV4_NEXTHOP_LOOKUP_V2);
+  zserv_create_header (s, ZEBRA_IPV4_NEXTHOP_LOOKUP_MRIB);
   stream_put_in_addr (s, &addr);
 
   if (rib)
     {
-      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-        zlog_debug("%s: Matching rib entry found.", __func__);
       stream_putc (s, rib->distance);
       stream_putl (s, rib->metric);
       num = 0;
@@ -664,8 +683,6 @@ zsend_ipv4_nexthop_lookup_v2 (struct zserv *client, struct in_addr addr)
     }
   else
     {
-      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-        zlog_debug("%s: No matching rib entry found.", __func__);
       stream_putc (s, 0); /* distance */
       stream_putl (s, 0); /* metric */
       stream_putc (s, 0); /* nexthop_num */
@@ -997,14 +1014,14 @@ zread_ipv4_nexthop_lookup (struct zserv *client, u_short length)
   return zsend_ipv4_nexthop_lookup (client, addr);
 }
 
-/* Nexthop lookup v2 for IPv4. */
+/* MRIB Nexthop lookup for IPv4. */
 static int
-zread_ipv4_nexthop_lookup_v2 (struct zserv *client, u_short length)
+zread_ipv4_nexthop_lookup_mrib (struct zserv *client, u_short length)
 {
   struct in_addr addr;
 
   addr.s_addr = stream_get_ipv4 (client->ibuf);
-  return zsend_ipv4_nexthop_lookup_v2 (client, addr);
+  return zsend_ipv4_nexthop_lookup_mrib (client, addr);
 }
 
 /* Nexthop lookup for IPv4. */
@@ -1439,8 +1456,8 @@ zebra_client_read (struct thread *thread)
     case ZEBRA_IPV4_NEXTHOP_LOOKUP:
       zread_ipv4_nexthop_lookup (client, length);
       break;
-    case ZEBRA_IPV4_NEXTHOP_LOOKUP_V2:
-      zread_ipv4_nexthop_lookup_v2 (client, length);
+    case ZEBRA_IPV4_NEXTHOP_LOOKUP_MRIB:
+      zread_ipv4_nexthop_lookup_mrib (client, length);
       break;
 #ifdef HAVE_IPV6
     case ZEBRA_IPV6_NEXTHOP_LOOKUP:
