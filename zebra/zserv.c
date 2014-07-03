@@ -616,24 +616,14 @@ zsend_ipv4_nexthop_lookup_mrib (struct zserv *client, struct in_addr addr)
   /* Lookup nexthop. */
   rib = rib_match_ipv4_safi (addr, SAFI_MULTICAST);
 
-  if (rib) {
-    if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-      zlog_debug("%s: Matching mrib entry found.", __func__);
-  }
-  else {
-    if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-      zlog_debug("%s: No matching mrib entry found.", __func__);
+  if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
+    zlog_debug("%s: %s mrib entry found.", __func__, rib ? "Matching" : "No matching");
 
+  if (!rib) {
     /* Retry lookup with unicast rib */
     rib = rib_match_ipv4_safi (addr, SAFI_UNICAST);
-    if (rib) {
-      if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-	zlog_debug("%s: Matching rib entry found.", __func__);
-    }
-    else {
     if (IS_ZEBRA_DEBUG_PACKET && IS_ZEBRA_DEBUG_RECV)
-      zlog_debug("%s: No matching rib entry found.", __func__);
-    }
+      zlog_debug("%s: %s rib entry found.", __func__, rib ? "Matching" : "No matching");
   }
 
   /* Get output stream. */
