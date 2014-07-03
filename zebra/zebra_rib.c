@@ -762,7 +762,6 @@ rib_match_ipv4 (struct in_addr addr)
 struct rib *
 rib_match_ipv4_safi (struct in_addr addr, safi_t safi)
 {
-  struct prefix_ipv4 p;
   struct route_table *table;
   struct route_node *rn;
   struct rib *match;
