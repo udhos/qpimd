@@ -207,7 +207,7 @@ zclient_socket(void)
 /* For sockaddr_un. */
 #include <sys/un.h>
 
-static int
+int
 zclient_socket_un (const char *path)
 {
   int ret;
