@@ -2286,14 +2286,14 @@ rib_delete_ipv4 (int type, int flags, struct prefix_ipv4 *p,
 
 /* Install static route into rib. */
 static void
-static_install_ipv4 (struct prefix *p, struct static_ipv4 *si)
+static_install_ipv4 (safi_t safi, struct prefix *p, struct static_ipv4 *si)
 {
   struct rib *rib;
   struct route_node *rn;
   struct route_table *table;
 
   /* Lookup table.  */
-  table = vrf_table (AFI_IP, SAFI_UNICAST, 0);
+  table = vrf_table (AFI_IP, safi, 0);
   if (! table)
     return;
 
@@ -2437,10 +2437,10 @@ static_uninstall_ipv4 (struct prefix *p, struct static_ipv4 *si)
   route_unlock_node (rn);
 }
 
-/* Add static route into static route configuration. */
 int
-static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
-		 u_char flags, u_char distance, u_int32_t vrf_id)
+safi_add_ipv4 (safi_t safi, struct prefix *p, struct in_addr *gate,
+	       const char *ifname, u_char flags, u_char distance,
+	       u_int32_t vrf_id)
 {
   u_char type = 0;
   struct route_node *rn;
@@ -2451,7 +2451,7 @@ static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
   struct route_table *stable;
 
   /* Lookup table.  */
-  stable = vrf_static_table (AFI_IP, SAFI_UNICAST, vrf_id);
+  stable = vrf_static_table (AFI_IP, safi, vrf_id);
   if (! stable)
     return -1;
   
@@ -2527,15 +2527,14 @@ static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
   si->next = cp;
 
   /* Install into rib. */
-  static_install_ipv4 (p, si);
+  static_install_ipv4 (safi, p, si);
 
   return 1;
 }
 
-/* Delete static route from static route configuration. */
 int
-static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
-		    u_char distance, u_int32_t vrf_id)
+safi_delete_ipv4 (safi_t safi, struct prefix *p, struct in_addr *gate,
+		  const char *ifname, u_char distance, u_int32_t vrf_id)
 {
   u_char type = 0;
   struct route_node *rn;
@@ -2543,7 +2542,7 @@ static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
   struct route_table *stable;
 
   /* Lookup table.  */
-  stable = vrf_static_table (AFI_IP, SAFI_UNICAST, vrf_id);
+  stable = vrf_static_table (AFI_IP, safi, vrf_id);
   if (! stable)
     return -1;
 
@@ -2594,6 +2593,22 @@ static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
   route_unlock_node (rn);
 
   return 1;
+}
+
+/* Add static route into static route configuration. */
+int
+static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
+		 u_char flags, u_char distance, u_int32_t vrf_id)
+{
+  return safi_add_ipv4(SAFI_UNICAST, p, gate, ifname, flags, distance, vrf_id);
+}
+
+/* Delete static route from static route configuration. */
+int
+static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
+		    u_char distance, u_int32_t vrf_id)
+{
+  return safi_delete_ipv4(SAFI_UNICAST, p, gate, ifname, distance, vrf_id);
 }
 
 
