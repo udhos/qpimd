@@ -419,6 +419,7 @@ extern int rib_delete_ipv4 (int type, int flags, struct prefix_ipv4 *p,
 		            u_int32_t, safi_t safi);
 
 extern struct rib *rib_match_ipv4 (struct in_addr);
+extern struct rib *rib_match_ipv4_safi (struct in_addr addr, safi_t safi);
 
 extern struct rib *rib_lookup_ipv4 (struct prefix_ipv4 *);
 
@@ -428,6 +429,14 @@ extern void rib_sweep_route (void);
 extern void rib_close (void);
 extern void rib_init (void);
 extern unsigned long rib_score_proto (u_char proto);
+
+extern int
+static_add_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
+		      const char *ifname, u_char flags, u_char distance,
+		      u_int32_t vrf_id);
+extern int
+static_delete_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
+			 const char *ifname, u_char distance, u_int32_t vrf_id);
 
 extern int
 static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
