@@ -71,6 +71,7 @@ struct zclient
   u_char default_information;
 
   /* Pointer to the callback functions. */
+  void (*zclient_broken) (struct zclient *);
   int (*router_id_update) (int, struct zclient *, uint16_t);
   int (*interface_add) (int, struct zclient *, uint16_t);
   int (*interface_delete) (int, struct zclient *, uint16_t);
