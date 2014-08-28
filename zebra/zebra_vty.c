@@ -152,7 +152,6 @@ DEFUN (ip_mroute,
        "Nexthop interface name\n"
        "Distance\n")
 {
-  vty_out (vty, "%% ip mroute %s %s %s%s", argv[0], argv[1], argv[2], VTY_NEWLINE);
   return zebra_static_ipv4_safi(vty, SAFI_MULTICAST, 1, argv[0], NULL, argv[1], NULL, argv[2]);
 }
 
@@ -166,7 +165,6 @@ DEFUN (no_ip_mroute,
        "Nexthop interface name\n"
        "Distance\n")
 {
-  vty_out (vty, "%% ip mroute %s %s %s%s", argv[0], argv[1], argv[2], VTY_NEWLINE);
   return zebra_static_ipv4_safi(vty, SAFI_MULTICAST, 0, argv[0], NULL, argv[1], NULL, argv[2]);
 }
 
