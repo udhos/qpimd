@@ -2438,9 +2438,9 @@ static_uninstall_ipv4 (struct prefix *p, struct static_ipv4 *si)
 }
 
 int
-safi_add_ipv4 (safi_t safi, struct prefix *p, struct in_addr *gate,
-	       const char *ifname, u_char flags, u_char distance,
-	       u_int32_t vrf_id)
+static_add_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
+		      const char *ifname, u_char flags, u_char distance,
+		      u_int32_t vrf_id)
 {
   u_char type = 0;
   struct route_node *rn;
@@ -2533,8 +2533,8 @@ safi_add_ipv4 (safi_t safi, struct prefix *p, struct in_addr *gate,
 }
 
 int
-safi_delete_ipv4 (safi_t safi, struct prefix *p, struct in_addr *gate,
-		  const char *ifname, u_char distance, u_int32_t vrf_id)
+static_delete_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
+			 const char *ifname, u_char distance, u_int32_t vrf_id)
 {
   u_char type = 0;
   struct route_node *rn;
@@ -2600,7 +2600,7 @@ int
 static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
 		 u_char flags, u_char distance, u_int32_t vrf_id)
 {
-  return safi_add_ipv4(SAFI_UNICAST, p, gate, ifname, flags, distance, vrf_id);
+  return static_add_ipv4_safi(SAFI_UNICAST, p, gate, ifname, flags, distance, vrf_id);
 }
 
 /* Delete static route from static route configuration. */
@@ -2608,7 +2608,7 @@ int
 static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
 		    u_char distance, u_int32_t vrf_id)
 {
-  return safi_delete_ipv4(SAFI_UNICAST, p, gate, ifname, distance, vrf_id);
+  return static_delete_ipv4_safi(SAFI_UNICAST, p, gate, ifname, distance, vrf_id);
 }
 
 
