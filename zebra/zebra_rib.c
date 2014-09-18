@@ -2485,7 +2485,7 @@ static_add_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
 
   /* Distance changed.  */
   if (update)
-    static_delete_ipv4 (p, gate, ifname, update->distance, vrf_id);
+    static_delete_ipv4_safi (safi, p, gate, ifname, update->distance, vrf_id);
 
   /* Make new static route structure. */
   si = XCALLOC (MTYPE_STATIC_IPV4, sizeof (struct static_ipv4));
@@ -2594,23 +2594,6 @@ static_delete_ipv4_safi (safi_t safi, struct prefix *p, struct in_addr *gate,
 
   return 1;
 }
-
-/* Add static route into static route configuration. */
-int
-static_add_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
-		 u_char flags, u_char distance, u_int32_t vrf_id)
-{
-  return static_add_ipv4_safi(SAFI_UNICAST, p, gate, ifname, flags, distance, vrf_id);
-}
-
-/* Delete static route from static route configuration. */
-int
-static_delete_ipv4 (struct prefix *p, struct in_addr *gate, const char *ifname,
-		    u_char distance, u_int32_t vrf_id)
-{
-  return static_delete_ipv4_safi(SAFI_UNICAST, p, gate, ifname, distance, vrf_id);
-}
-
 
 #ifdef HAVE_IPV6
 static int
