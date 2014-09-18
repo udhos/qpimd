@@ -142,6 +142,18 @@ zebra_static_ipv4 (struct vty *vty, int add_cmd, const char *dest_str,
 }
 
 /* Static unicast routes for multicast RPF lookup. */
+DEFUN (ip_mroute,
+       ip_mroute_cmd,
+       "ip mroute A.B.C.D/M (A.B.C.D|INTERFACE)",
+       IP_STR
+       "Configure static unicast route into MRIB for multicast RPF lookup\n"
+       "IP destination prefix (e.g. 10.0.0.0/8)\n"
+       "Nexthop address\n"
+       "Nexthop interface name\n")
+{
+  return zebra_static_ipv4_safi(vty, SAFI_MULTICAST, 1, argv[0], NULL, argv[1], NULL, NULL);
+}
+
 DEFUN (ip_mroute_dist,
        ip_mroute_dist_cmd,
        "ip mroute A.B.C.D/M (A.B.C.D|INTERFACE) <1-255>",
@@ -153,6 +165,18 @@ DEFUN (ip_mroute_dist,
        "Distance\n")
 {
   return zebra_static_ipv4_safi(vty, SAFI_MULTICAST, 1, argv[0], NULL, argv[1], NULL, argv[2]);
+}
+
+DEFUN (no_ip_mroute,
+       no_ip_mroute_cmd,
+       "no ip mroute A.B.C.D/M (A.B.C.D|INTERFACE)",
+       IP_STR
+       "Configure static unicast route into MRIB for multicast RPF lookup\n"
+       "IP destination prefix (e.g. 10.0.0.0/8)\n"
+       "Nexthop address\n"
+       "Nexthop interface name\n")
+{
+  return zebra_static_ipv4_safi(vty, SAFI_MULTICAST, 0, argv[0], NULL, argv[1], NULL, NULL);
 }
 
 DEFUN (no_ip_mroute_dist,
@@ -2114,7 +2138,9 @@ zebra_vty_init (void)
   install_node (&ip_node, zebra_ip_config);
   install_node (&protocol_node, config_write_protocol);
 
+  install_element (CONFIG_NODE, &ip_mroute_cmd);
   install_element (CONFIG_NODE, &ip_mroute_dist_cmd);
+  install_element (CONFIG_NODE, &no_ip_mroute_cmd);
   install_element (CONFIG_NODE, &no_ip_mroute_dist_cmd);
   install_element (CONFIG_NODE, &ip_protocol_cmd);
   install_element (CONFIG_NODE, &no_ip_protocol_cmd);
