@@ -144,6 +144,18 @@ if_connected_reset(struct interface *ifp)
   list_delete_all_node (ifp->connected);
 }
 
+void
+if_connected_reset_all (void) {
+  struct listnode  *ifnode;
+  struct interface *ifp;
+
+  zlog_warn("%s: resetting all interface addresses", __func__);
+
+  for (ALL_LIST_ELEMENTS_RO(iflist, ifnode, ifp)) {
+    if_connected_reset(ifp);
+  }
+}
+
 /* Delete interface structure. */
 void
 if_delete_retain (struct interface *ifp)
