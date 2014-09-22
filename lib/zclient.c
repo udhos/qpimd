@@ -57,6 +57,8 @@ zclient_new ()
   zclient->obuf = stream_new (ZEBRA_MAX_PACKET_SIZ);
   zclient->wb = buffer_new(0);
 
+  zclient->zclient_broken = 0;
+
   return zclient;
 }
 
@@ -110,6 +112,18 @@ zclient_init (struct zclient *zclient, int redist_default)
   zclient_event (ZCLIENT_SCHEDULE, zclient);
 }
 
+static void reset_iface_addresses() {
+  struct listnode  *ifnode;
+  struct interface *ifp;
+
+  zlog_warn("%s %s: resetting all interface addresses",
+	    __FILE__, __PRETTY_FUNCTION__);
+
+  for (ALL_LIST_ELEMENTS_RO(iflist, ifnode, ifp)) {
+    if_connected_reset(ifp);
+  }
+}
+
 /* Stop zebra client services. */
 void
 zclient_stop (struct zclient *zclient)
@@ -136,6 +150,15 @@ zclient_stop (struct zclient *zclient)
       zclient->sock = -1;
     }
   zclient->fail = 0;
+
+  /* Callback to optionally notify application about broken
+     connection */
+  if (zclient->zclient_broken)
+    (zclient->zclient_broken)(zclient);
+
+  /* Prevent interfaces' addresses duplication when zclient connection
+     is restored */
+  reset_iface_addresses();
 }
 
 void
