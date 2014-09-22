@@ -57,8 +57,6 @@ zclient_new ()
   zclient->obuf = stream_new (ZEBRA_MAX_PACKET_SIZ);
   zclient->wb = buffer_new(0);
 
-  zclient->zclient_broken = NULL;
-
   return zclient;
 }
 
