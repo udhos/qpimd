@@ -293,7 +293,6 @@ extern const char *ifindex2ifname (unsigned int);
 extern unsigned int ifname2ifindex(const char *ifname);
 
 /* Connected address functions. */
-extern void if_connected_reset(struct interface *ifp);
 extern void if_connected_reset_all (void);
 extern struct connected *connected_new (void);
 extern void connected_free (struct connected *);
