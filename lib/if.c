@@ -141,9 +141,7 @@ if_create (const char *name, int namelen)
 void
 if_connected_reset(struct interface *ifp)
 {
-  list_free(ifp->connected);
-  ifp->connected = list_new();
-  ifp->connected->del = (void (*) (void *)) connected_free;
+  list_delete_all_node (ifp->connected);
 }
 
 /* Delete interface structure. */
