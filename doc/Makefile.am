@@ -61,7 +61,11 @@ quagga_TEXINFOS = appendix.texi babeld.texi basic.texi bgpd.texi filter.texi \
 .dia.png:
 	$(DIATOPNG) "$@" $<
 
-man_MANS = 
+man_MANS =
+
+if PIMD
+man_MANS += pimd.8
+endif
 
 if BGPD
 man_MANS += bgpd.8
